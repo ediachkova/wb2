@@ -594,8 +594,6 @@ function NomenclatureReportV2({ paid: initialPaid = false }) {
       )
     ),
 
-    paid && React.createElement(AIInsights, { rows }),
-
     // Image preview modal
     previewProduct && React.createElement(Modal, { open:true, onClose:()=>setPreviewProduct(null), title: previewProduct.name, width:480 },
       React.createElement('div', { style:{ display:'flex', flexDirection:'column', gap:14 } },
@@ -609,36 +607,6 @@ function NomenclatureReportV2({ paid: initialPaid = false }) {
         React.createElement(Alert, { type:'info' }, 'Реальные фотографии товаров подгружаются из карточек маркетплейса по API. Здесь — плейсхолдер с инициалами.')
       )
     )
-  );
-}
-
-function AIInsights({ rows }) {
-  const top = rows.find(r => r.margin > 25);
-  const worst = rows.find(r => r.margin < 0);
-  const overLog = rows.find(r => r.logistics > 12);
-
-  return React.createElement(Card, { style:{ padding:20 } },
-    React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:10, marginBottom:14 } },
-      React.createElement('div', { style:{ width:28, height:28, borderRadius:8, background:'linear-gradient(135deg, var(--accent), #8B5CF6)', display:'flex', alignItems:'center', justifyContent:'center' } },
-        React.createElement(Icon, { name:'info', size:15, color:'#fff' })
-      ),
-      React.createElement('h3', { style:{ fontSize:15, fontWeight:700, color:'var(--text-primary)', margin:0 } }, 'AI-рекомендации')
-    ),
-    React.createElement('div', { style:{ display:'flex', flexDirection:'column', gap:8 } },
-      worst && React.createElement(InsightRow, { color:'var(--negative)', icon:'alertTriangle',
-        text: `${worst.sku} «${worst.name}»: маржа ${fmtPct(worst.margin)}. Себестоимость ${fmtPct(worst.cost/worst.salesRub*100)} от выручки. Рассмотрите повышение цены на ${Math.abs(Math.round(worst.margin * -1.5))}% или смену поставщика.` }),
-      overLog && React.createElement(InsightRow, { color:'var(--warning)', icon:'alertTriangle',
-        text: `${overLog.sku}: логистика ${fmtPct(overLog.logistics)} — выше нормы (8%). Размещение на ближайший региональный склад снизит расход на 30-40%.` }),
-      top && React.createElement(InsightRow, { color:'var(--positive)', icon:'trendingUp',
-        text: `${top.sku} «${top.name}»: маржа ${fmtPct(top.margin)} — топ портфеля. Увеличьте бюджет рекламы на 25% и расширьте размерную сетку.` }),
-    )
-  );
-}
-
-function InsightRow({ color, icon, text }) {
-  return React.createElement('div', { style:{ display:'flex', gap:10, padding:'10px 14px', background:'var(--bg-base)', borderRadius:8 } },
-    React.createElement(Icon, { name:icon, size:16, color, style:{ marginTop:2, flexShrink:0 } }),
-    React.createElement('span', { style:{ fontSize:13, color:'var(--text-primary)', lineHeight:1.55 } }, text)
   );
 }
 

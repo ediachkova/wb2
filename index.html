@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wild Profit — Аналитика для маркетплейсов</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base: #F4F6FB;
+      --bg-card: #FFFFFF;
+      --bg-sidebar: #FFFFFF;
+      --border: #E6EAF2;
+      --text-primary: #0E1A2E;
+      --text-secondary: #6B7A99;
+      --accent: #4F6EF7;
+      --accent-hover: #3A55D4;
+      --accent-soft: rgba(79,110,247,0.10);
+      --positive: #12B76A;
+      --negative: #F04438;
+      --warning: #F79009;
+      --chart-area: rgba(79,110,247,0.18);
+      --chart-area-2: rgba(46,194,126,0.18);
+    }
+
+    html.dark {
+      --bg-base: #0B1220;
+      --bg-card: #131C2E;
+      --bg-sidebar: #0F1828;
+      --border: #1F2B41;
+      --text-primary: #EAF0FA;
+      --text-secondary: #8290AE;
+      --accent: #58A6FF;
+      --accent-hover: #79B8FF;
+      --accent-soft: rgba(88,166,255,0.18);
+      --positive: #00A678;
+      --negative: #D55C46;
+      --warning: #D58F00;
+      --chart-area: rgba(88,166,255,0.20);
+      --chart-area-2: rgba(46,194,126,0.18);
+    }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #root { min-height: 100vh; }
+
+    * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    *::-webkit-scrollbar { width: 5px; height: 5px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+    input, select, textarea, button { font-family: 'Inter', sans-serif; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-16px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .45; }
+    }
+
+    /* Recharts tooltip override */
+    .recharts-tooltip-wrapper { z-index: 100 !important; }
+
+    /* Zebra-striped tables */
+    table.zebra tbody tr:nth-child(even) > td { background-color: color-mix(in srgb, var(--text-secondary) 9%, transparent); }
+    table.zebra tbody tr:nth-child(even) > td:first-child { background-color: color-mix(in srgb, var(--text-secondary) 9%, var(--bg-card)); }
+    table.zebra tbody tr:hover > td { background-color: color-mix(in srgb, var(--accent) 10%, var(--bg-card)) !important; }
+  </style>
+
+  <template id="__bundler_thumbnail" data-bg-color="#0D1117">
+    <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+      <rect width="800" height="500" fill="#0D1117"/>
+      <rect x="0" y="0" width="180" height="500" fill="#161B22"/>
+      <rect x="20" y="24" width="32" height="32" rx="8" fill="#58A6FF"/>
+      <rect x="60" y="30" width="80" height="12" rx="4" fill="#E6EDF3"/>
+      <rect x="20" y="80" width="140" height="10" rx="4" fill="#21262D"/>
+      <rect x="20" y="100" width="140" height="10" rx="4" fill="#21262D"/>
+      <rect x="20" y="130" width="100" height="8" rx="4" fill="#21262D"/>
+      <rect x="20" y="148" width="120" height="8" rx="4" fill="#21262D"/>
+      <rect x="20" y="166" width="110" height="8" rx="4" fill="#21262D"/>
+      <rect x="200" y="0" width="600" height="56" fill="#161B22"/>
+      <rect x="220" y="18" width="120" height="18" rx="4" fill="#21262D"/>
+      <rect x="720" y="14" width="60" height="28" rx="8" fill="#21262D"/>
+      <rect x="200" y="76" width="132" height="80" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <rect x="216" y="92" width="60" height="10" rx="3" fill="#8B949E"/>
+      <rect x="216" y="110" width="90" height="20" rx="4" fill="#E6EDF3"/>
+      <rect x="344" y="76" width="132" height="80" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <rect x="360" y="92" width="60" height="10" rx="3" fill="#8B949E"/>
+      <rect x="360" y="110" width="90" height="20" rx="4" fill="#3FB950"/>
+      <rect x="488" y="76" width="132" height="80" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <rect x="504" y="92" width="60" height="10" rx="3" fill="#8B949E"/>
+      <rect x="504" y="110" width="70" height="20" rx="4" fill="#58A6FF"/>
+      <rect x="632" y="76" width="148" height="80" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <rect x="648" y="92" width="60" height="10" rx="3" fill="#8B949E"/>
+      <rect x="648" y="110" width="80" height="20" rx="4" fill="#E6EDF3"/>
+      <rect x="200" y="172" width="430" height="200" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <polyline points="230,340 270,310 310,320 350,280 390,260 430,270 470,240 510,220 550,230 590,200" stroke="#58A6FF" stroke-width="2" fill="none"/>
+      <polyline points="230,360 270,345 310,350 350,330 390,320 430,325 470,300 510,290 550,295 590,270" stroke="#3FB950" stroke-width="2" fill="none"/>
+      <rect x="642" y="172" width="138" height="200" rx="10" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+      <circle cx="711" cy="272" r="50" fill="none" stroke="#21262D" stroke-width="18"/>
+      <circle cx="711" cy="272" r="50" fill="none" stroke="#58A6FF" stroke-width="18" stroke-dasharray="100 214" stroke-dashoffset="0"/>
+      <circle cx="711" cy="272" r="50" fill="none" stroke="#3FB950" stroke-width="18" stroke-dasharray="60 214" stroke-dashoffset="-100"/>
+      <circle cx="711" cy="272" r="50" fill="none" stroke="#F79009" stroke-width="18" stroke-dasharray="40 214" stroke-dashoffset="-160"/>
+    </svg>
+  </template>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="shared.jsx"></script>
+  <script type="text/babel" src="layout.jsx"></script>
+  <script type="text/babel" src="dashboard.jsx"></script>
+  <script type="text/babel" src="reports.jsx"></script>
+  <script type="text/babel" src="pnl.jsx"></script>
+  <script type="text/babel" src="nomenclature.jsx"></script>
+  <script type="text/babel" src="sku-link.jsx"></script>
+  <script type="text/babel" src="directories.jsx"></script>
+  <script type="text/babel" src="settings.jsx"></script>
+  <script type="text/babel" src="auth.jsx"></script>
+  <script type="text/babel" src="registers.jsx"></script>
+  <script type="text/babel" src="help.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
